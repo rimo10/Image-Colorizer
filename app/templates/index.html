@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image colorizer</title>
+    <link rel="stylesheet" type="text/css" href="../static/style.css" />
+</head>
+
+<body
+    style="background-image: linear-gradient(-225deg, #5271C4 0%, #B19FFF 48%, #ECA1FE 100%);;;height: 100vh;img{border: 0;}">
+    <center>
+        <div class="container">
+            <form id="myform" enctype="multipart/form-data">
+                <h1>
+                    <label for="input-image">Select an Image</label>
+                </h1>
+                <br />
+                <input type="file" name="input-image" id="image" onchange="loadFile(event)" />
+                <br />
+                <br />
+                <div>
+                    <label for="colorization_type">Choose Colorization type</label>
+                    <br>
+                    <input type="radio" id="landscape" name="colorization_type" value="landscape" />
+                    <label for="landscape">Landscape</label>
+                    <input type="radio" id="person" name="colorization_type" value="person" />
+                    <label for="person">Person</label>
+                    <input type="radio" id="animals" name="colorization_type" value="animals" />
+                    <label for="animals">Animals</label>
+                    <input type="radio" id="flowers" name="colorization_type" value="flowers" />
+                    <label for="flowers">Flowers/Fruits</label>
+                </div>
+                <br>
+                <!-- <input type="submit" value="upload" /> -->
+                <button type="submit" value="Colorize"
+                    style="width: 100px; height: 50px;border: 2px solid black; border-radius: 10px; background-image: linear-gradient(-225deg, #FFE29F 0%, #FFA99F 48%, #FF719A 100%);;;">Colorize</button>
+            </form>
+        </div>
+        <p>
+            <img id="uploaded-image" width="360" height="385" alt="" style="border: none;" />
+            <img id="output-img" width="360" , height="385" alt="" style="border: none;">
+        </p>
+    </center>
+    <script>
+        const loadFile = function (event) {
+            const image = document.getElementById("uploaded-image");
+            image.src = URL.createObjectURL(event.target.files[0]);
+        };
+
+        const form = document.querySelector("form");
+        const img = document.querySelector("#output-img")
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append("image", form.elements.image.files[0]);
+            console.log(form.elements["colorization_type"].value);
+            formData.append("colorization_type", form.elements["colorization_type"].value);
+            try {
+                const response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData,
+                });
+                const data = await response.json();
+                img.src = "data:image/png;base64," + data.image;
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    </script>
+</body>
+
+</html>
